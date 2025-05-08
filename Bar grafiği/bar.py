@@ -1,7 +1,6 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-# Veriyi oku
 df = pd.read_csv("Global Electricity Statistics.csv")
 
 # 2020 yılı için üretim ve tüketim verilerini filtrele
@@ -34,10 +33,10 @@ ulkeler_tr = {
     "Germany": "Almanya",
     "Canada": "Kanada",
     "Brazil": "Brezilya",
-    "Brazi": "Brezilya",      # Yazım hatası için
+    "Brazi": "Brezilya",      
     "France": "Fransa",
     "South Korea": "Güney Kore",
-    "Japar": "Japonya"        # Yazım hatası için
+    "Japar": "Japonya"       
 }
 
 top10_data['Country'] = top10_data['Country'].replace(ulkeler_tr)
@@ -61,7 +60,6 @@ top10_data['siralama'] = top10_data['Country'].map({ulke: i for i, ulke in enume
 top10_data = top10_data.sort_values('siralama')
 top10_data = top10_data.drop('siralama', axis=1)
 
-# Bar grafiği oluştur
 fig = go.Figure()
 
 # Üretim barları
