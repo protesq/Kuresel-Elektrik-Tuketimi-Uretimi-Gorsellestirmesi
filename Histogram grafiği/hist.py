@@ -47,6 +47,7 @@ country_tr_map = {
     "United Kingdom": "Birleşik Krallık"
 }
 
+# Veri yükle
 df = pd.read_csv("Global Electricity Statistics.csv")
 
 # Avrupa ülkelerini ve net üretim verilerini filtrele
@@ -66,28 +67,6 @@ bins = [0, 100, 200, 300, 400, 700]
 labels = ['0-100', '100-200', '200-300', '300-400', '400-700']
 europe_df['bin'] = pd.cut(europe_df['2020'], bins=bins, labels=labels)
 
-# Her aralıktaki ülkeleri bul
-country_groups = {}
-colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99', '#FF99CC']
-
-def format_countries_grid(countries, cols=3):
-    rows = ceil(len(countries) / cols)
-    countries_padded = countries + [''] * (rows * cols - len(countries))
-    grid = []
-    for i in range(0, len(countries_padded), cols):
-        row = countries_padded[i:i+cols]
-        grid.append(' | '.join(filter(None, row)))
-    return '<br>'.join(grid)
-
-for label in labels:
-    mask = europe_df['bin'] == label
-    countries = sorted(europe_df[mask]['Country'].tolist())  # Türkçe isimler kullanılıyor
-    if countries:
-        country_groups[label] = {
-            'countries': countries,
-            'color': colors[labels.index(label)],
-            'formatted_countries': format_countries_grid(countries)
-        }
 
 # Histogram çiz
 fig = go.Figure()
@@ -99,8 +78,6 @@ for label in labels:
         fig.add_trace(go.Bar(
             x=[label],
             y=[count],
-            name=f"{label} TWh<br>" + country_groups[label]['formatted_countries'],
-            marker_color=country_groups[label]['color'],
             width=1
         ))
 
@@ -115,17 +92,10 @@ fig.update_layout(
     yaxis_title="Ülke Sayısı",
     paper_bgcolor="white",
     plot_bgcolor="white",
-    legend=dict(
-        yanchor="top",
-        y=1,
-        xanchor="left",
-        x=1.01,
-        bgcolor='rgba(255, 255, 255, 0.8)',
-        title="Ülkeler ve Üretim Aralıkları",
-        font=dict(size=15)
-    )
+    showlegend=False,
 )
 
-
+# Grafiği göster
 fig.show()
+# Grafiği PNG olarak kaydet
 pio.write_image(fig, "histogrampng.png")
