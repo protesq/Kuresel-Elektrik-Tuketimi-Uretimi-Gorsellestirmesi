@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 df = pd.read_csv("Global Electricity Statistics.csv")
 
@@ -45,44 +46,55 @@ cons_df = cons_df.dropna(subset=[year])[["Region", year]].assign(Type="Tüketim"
 
 long_df = pd.concat([gen_df, cons_df], ignore_index=True).rename(columns={year: "Value"})
 
-# Manuel kıta sıralaması
-order = [
-    'Asya & Okyanusya',
-    'Kuzey Amerika',
-    'Avrasya',
-    'Orta & Güney Amerika',
-    'Avrupa',
-    'Orta Doğu',
-    'Afrika'
-]
+# İki grup için veri setlerini ayır
+buyuk_kitalar = ['Asya & Okyanusya', 'Kuzey Amerika']
+diger_kitalar = ['Avrasya', 'Orta & Güney Amerika', 'Avrupa', 'Orta Doğu', 'Afrika']
 
-fig = px.box(
-    long_df,
-    x="Region",
-    y="Value",
-    color="Type",
-    points=False,
-    category_orders={"Region": order},  # Kıtaları belirtilen sırada göster
-    labels={"Value": "Elektrik (TWh)", "Region": "Kıtalar"},
-    title=f"Kıtalara Göre Elektrik Üretimi ve Tüketimi ({year})",
-    color_discrete_map={"Üretim": "#1f77b4", "Tüketim": "#2ca02c"}
-)
+buyuk_df = long_df[long_df['Region'].isin(buyuk_kitalar)]
+diger_df = long_df[long_df['Region'].isin(diger_kitalar)]
 
+# Alt grafikler oluştur
+fig = make_subplots(rows=2, cols=1, 
+                    subplot_titles=("Büyük Kıtalar", "Diğer Kıtalar"),
+                    vertical_spacing=0.15)
+
+# Büyük kıtalar için boxplot
+fig1 = px.box(buyuk_df, x="Region", y="Value", color="Type",
+              points=False,
+              category_orders={"Region": buyuk_kitalar},
+              color_discrete_map={"Üretim": "#1f77b4", "Tüketim": "#2ca02c"})
+
+# Diğer kıtalar için boxplot
+fig2 = px.box(diger_df, x="Region", y="Value", color="Type",
+              points=False,
+              category_orders={"Region": diger_kitalar},
+              color_discrete_map={"Üretim": "#1f77b4", "Tüketim": "#2ca02c"})
+
+# Grafikleri alt grafiklere ekle
+for trace in fig1.data:
+    fig.add_trace(trace, row=1, col=1)
+for trace in fig2.data:
+    fig.add_trace(trace, row=2, col=1)
+
+# Grafik düzenini ayarla
 fig.update_layout(
-    boxmode="group",
-    legend_title_text="",
+    title_text=f"Kıtalara Göre Elektrik Üretimi ve Tüketimi ({year})",
+    height=1200,
+    width=1200,
+    showlegend=True,
     template="plotly_white",
-    height=800,
-    width=1200
+    boxmode="group"
 )
 
-# Y eksenini daha okunaklı hale getir
-fig.update_yaxes(title_font=dict(size=14), tickfont=dict(size=12))
+# Y eksenlerini düzenle
+fig.update_yaxes(title_text="Elektrik (TWh)", row=1, col=1)
+fig.update_yaxes(title_text="Elektrik (TWh)", row=2, col=1)
 
-# X eksenini daha okunaklı hale getir
-fig.update_xaxes(title_font=dict(size=14), tickfont=dict(size=12))
+# X eksenlerini düzenle
+fig.update_xaxes(title_text="", row=1, col=1)
+fig.update_xaxes(title_text="", row=2, col=1)
 
 # Grafiği kaydet ve göster
-fig.write_html("kitalar_elektrik_boxplot.html")
-fig.write_image("kitalar_elektrik_boxplot.png", scale=2)
+fig.write_html("elektrik_boxplot.html")
+fig.write_image("elektrik_boxplot.png", scale=2)
 fig.show()
