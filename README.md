@@ -17,6 +17,10 @@ Bu proje, farklı veri görselleştirme teknikleri kullanarak elektrik tüketimi
 
 Projede kullanılan veri seti "Global Electricity Statistics.csv" dosyasında bulunmaktadır. Bu veri seti, küresel elektrik tüketimi ve üretimi ile ilgili istatistiksel verileri içermektedir.
 
+Bu proje, [Global Electricity Statistics](https://www.kaggle.com/datasets/akhiljethwa/global-electricity-statistics) veri setini kullanmaktadır.
+
+**Uyarı:** Eğer grafikler bir pencerede açılmazsa, HTML dosyası olarak kaydedilmiş olabilirler. Bu durumda, dosyayı bir web tarayıcısında açmayı deneyin.
+
 ## Proje Yapısı
 
 Proje, her bir görselleştirme tekniği için ayrı klasörler içermektedir:
